@@ -67,14 +67,39 @@ const StoreSettings = ({ smeProfile }) => {
     setSuccessMsg('');
 
     try {
-      const { data, error } = await supabase.auth.updateUser({
+      // 1. บันทึกลง user_metadata (Auth)
+      const { data: authData, error: authError } = await supabase.auth.updateUser({
         data: {
           assessment_answers: answers,
           features: scores
         }
       });
+      if (authError) throw authError;
 
-      if (error) throw error;
+      // 2. บันทึกลง store_assessments table (Database)
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { error: dbError } = await supabase
+          .from('store_assessments')
+          .upsert({
+            user_id: session.user.id,
+            r_type: answers.r_type,
+            r_capital: answers.r_capital,
+            r_exp: answers.r_exp,
+            l_warehouse: answers.l_warehouse,
+            l_cond: answers.l_cond,
+            l_sla: answers.l_sla,
+            p_status: answers.p_status,
+            p_scale: answers.p_scale,
+            p_credit: answers.p_credit,
+            score_reliability: scores.reliability,
+            score_logistics: scores.logistics,
+            score_price: scores.price,
+            score_location: scores.location,
+          }, { onConflict: 'user_id' });
+        if (dbError) console.warn('DB save warning:', dbError.message);
+      }
+
       setSuccessMsg("อัปเดต Business Profile ระดับ Enterprise สำเร็จ! พร้อมสำหรับการจับคู่ระดับสูง");
     } catch (err) {
       setErrorMsg(err.message);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Store, Network, ShieldCheck, Zap, ChevronRight, Activity } from 'lucide-react';
 
-const BusinessNetwork = ({ partners, demands }) => {
+const BusinessNetwork = ({ partners, demands, session, storeName, onConnect }) => {
   const [selectedPartner, setSelectedPartner] = useState(null);
   const [isScanning, setIsScanning] = useState(true);
 
@@ -195,7 +195,7 @@ const BusinessNetwork = ({ partners, demands }) => {
         
         <div className="mt-4 text-center">
           <span className="text-white font-black tracking-widest text-lg bg-slate-900/80 px-4 py-1.5 rounded-full backdrop-blur-md border border-slate-800 shadow-xl inline-block">
-            MY STORE
+            {storeName || 'MY STORE'}
           </span>
           <p className={`text-[10px] font-bold mt-3 uppercase tracking-widest flex items-center justify-center gap-2 transition-colors duration-300 ${isScanning ? 'text-cyan-400' : 'text-blue-400'}`}>
             <Activity size={12} className={isScanning ? 'animate-spin' : ''} />
@@ -324,7 +324,10 @@ const BusinessNetwork = ({ partners, demands }) => {
               </div>
             </div>
 
-            <button className="w-full mt-8 py-4 bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 hover:from-cyan-500 hover:via-blue-500 hover:to-blue-600 text-white rounded-2xl font-black shadow-[0_0_30px_rgba(59,130,246,0.3)] hover:shadow-[0_0_40px_rgba(59,130,246,0.6)] transition-all hover:scale-[1.03] active:scale-95 flex items-center justify-center gap-3 group border border-blue-400/50 overflow-hidden relative">
+            <button
+              onClick={() => onConnect && onConnect(selectedPartner)}
+              className="w-full mt-8 py-4 bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 hover:from-cyan-500 hover:via-blue-500 hover:to-blue-600 text-white rounded-2xl font-black shadow-[0_0_30px_rgba(59,130,246,0.3)] hover:shadow-[0_0_40px_rgba(59,130,246,0.6)] transition-all hover:scale-[1.03] active:scale-95 flex items-center justify-center gap-3 group border border-blue-400/50 overflow-hidden relative"
+            >
               {/* Button shimmer */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-[100%] group-hover:animate-[shimmer_1.5s_infinite]"></div>
               
